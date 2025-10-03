@@ -450,6 +450,124 @@
             background: #1a202c;
         }
 
+        .delivery-section, .payment-section {
+            margin-bottom: 20px;
+        }
+
+        .delivery-title, .payment-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #d4a021;
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #374151;
+            color: #fff;
+            border: 2px solid #4b5563;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #d4a021;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .payment-option {
+            background: #374151;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .payment-option:hover {
+            background: #4b5563;
+        }
+
+        .payment-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .payment-option input[type="radio"]:checked + span {
+            color: #d4a021;
+            font-weight: bold;
+        }
+
+        .payment-option:has(input:checked) {
+            border-color: #d4a021;
+            background: #4b5563;
+        }
+
+        .pix-container {
+            background: #374151;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .pix-qrcode {
+            text-align: center;
+            margin-bottom: 15px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .pix-key {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pix-key input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .copy-btn {
+            background: #d4a021;
+            color: #000;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: #ffc107;
+        }
+
+        .pix-note {
+            background: #1a202c;
+            color: #fbbf24;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
         .cart-total {
             background: #374151;
             padding: 15px;
@@ -599,6 +717,58 @@
             <div class="empty-cart">Carrinho vazio</div>
         </div>
         <div class="cart-footer" id="cart-footer" style="display: none;">
+            <!-- Endereço de Entrega -->
+            <div class="delivery-section">
+                <div class="delivery-title">📍 Endereço de Entrega</div>
+                <input type="text" id="endereco-rua" class="input-field" placeholder="Rua e Número">
+                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
+                <input type="text" id="endereco-complemento" class="input-field" placeholder="Complemento (opcional)">
+            </div>
+
+            <!-- Forma de Pagamento -->
+            <div class="payment-section">
+                <div class="payment-title">💳 Forma de Pagamento</div>
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="pix" onchange="showPixInfo()">
+                        <span>💚 PIX</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="credito" onchange="hidePixInfo()">
+                        <span>💳 Crédito</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="debito" onchange="hidePixInfo()">
+                        <span>💳 Débito</span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="dinheiro" onchange="hidePixInfo()">
+                        <span>💵 Dinheiro</span>
+                    </label>
+                </div>
+                
+                <!-- Troco para Dinheiro -->
+                <div id="troco-section" style="display: none; margin-top: 10px;">
+                    <input type="text" id="troco-valor" class="input-field" placeholder="Troco para quanto? (opcional)">
+                </div>
+
+                <!-- Info PIX -->
+                <div id="pix-info" style="display: none;">
+                    <div class="pix-container">
+                        <div class="pix-qrcode">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix0136sua-chave-pix-aqui@exemplo.com520400005303986540525.005802BR5925LANCHES GOURMET6014CONCHAS-SP62070503***63041234" alt="QR Code PIX" style="width: 100%; border-radius: 10px;">
+                        </div>
+                        <div class="pix-key">
+                            <input type="text" id="pix-copy" value="sua-chave-pix@exemplo.com" readonly class="input-field">
+                            <button class="copy-btn" onclick="copyPixKey()">📋 Copiar Chave</button>
+                        </div>
+                        <div class="pix-note">
+                            ⚠️ Após o pagamento, envie o comprovante pelo WhatsApp
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="cart-total">
                 <span>TOTAL:</span>
                 <span class="cart-total-price" id="cart-total">R$ 0,00</span>
@@ -899,8 +1069,25 @@
                 return;
             }
 
+            // Validar endereço
+            var rua = document.getElementById('endereco-rua').value.trim();
+            var bairro = document.getElementById('endereco-bairro').value.trim();
+            
+            if (!rua || !bairro) {
+                alert('Por favor, preencha o endereço de entrega!');
+                return;
+            }
+
+            // Validar forma de pagamento
+            var pagamento = document.querySelector('input[name="payment"]:checked');
+            if (!pagamento) {
+                alert('Por favor, selecione a forma de pagamento!');
+                return;
+            }
+
             var mensagem = '*🍔 NOVO PEDIDO - LANCHES GOURMET*\n\n';
             
+            // Itens do pedido
             for (var i = 0; i < cart.length; i++) {
                 var item = cart[i];
                 mensagem += '*' + (i + 1) + '. ' + item.nome + '* (' + item.quantidade + 'x)\n';
@@ -928,15 +1115,77 @@
                 mensagem += '\n';
             }
 
+            // Total
             var total = 0;
             for (var i = 0; i < cart.length; i++) {
                 total += ((cart[i].precoTotal || cart[i].preco) * cart[i].quantidade);
             }
             mensagem += '*TOTAL: R$ ' + total.toFixed(2) + '*\n\n';
-            mensagem += '_Delivery em Conchas-SP_';
+
+            // Endereço
+            var complemento = document.getElementById('endereco-complemento').value.trim();
+            mensagem += '*📍 ENDEREÇO DE ENTREGA*\n';
+            mensagem += rua + '\n';
+            mensagem += bairro + '\n';
+            if (complemento) {
+                mensagem += complemento + '\n';
+            }
+            mensagem += '\n';
+
+            // Forma de Pagamento
+            var pagamentoTexto = {
+                'pix': '💚 PIX',
+                'credito': '💳 Cartão de Crédito',
+                'debito': '💳 Cartão de Débito',
+                'dinheiro': '💵 Dinheiro'
+            };
+            mensagem += '*💳 FORMA DE PAGAMENTO*\n';
+            mensagem += pagamentoTexto[pagamento.value] + '\n';
+
+            // Se for dinheiro, adicionar info de troco
+            if (pagamento.value === 'dinheiro') {
+                var troco = document.getElementById('troco-valor').value.trim();
+                if (troco) {
+                    mensagem += 'Troco para: R$ ' + troco + '\n';
+                }
+            }
+
+            mensagem += '\n_Delivery em Conchas-SP_';
 
             var whatsappUrl = 'https://wa.me/5514981722063?text=' + encodeURIComponent(mensagem);
             window.open(whatsappUrl, '_blank');
+        }
+
+        function showPixInfo() {
+            document.getElementById('pix-info').style.display = 'block';
+            document.getElementById('troco-section').style.display = 'none';
+        }
+
+        function hidePixInfo() {
+            document.getElementById('pix-info').style.display = 'none';
+            var pagamento = document.querySelector('input[name="payment"]:checked');
+            if (pagamento && pagamento.value === 'dinheiro') {
+                document.getElementById('troco-section').style.display = 'block';
+            } else {
+                document.getElementById('troco-section').style.display = 'none';
+            }
+        }
+
+        function copyPixKey() {
+            var pixKey = document.getElementById('pix-copy');
+            pixKey.select();
+            pixKey.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            var btn = event.target;
+            var originalText = btn.textContent;
+            btn.textContent = '✅ Copiado!';
+            btn.style.background = '#10b981';
+            
+            setTimeout(function() {
+                btn.textContent = originalText;
+                btn.style.background = '#d4a021';
+            }, 2000);
         }
 
         renderLanches();
