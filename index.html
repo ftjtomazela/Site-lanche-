@@ -725,8 +725,28 @@
             <div class="delivery-section">
                 <div class="delivery-title">📍 Endereço de Entrega</div>
                 <input type="text" id="endereco-rua" class="input-field" placeholder="Rua e Número">
-                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
+                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro" onchange="calcularFrete()">
                 <input type="text" id="endereco-complemento" class="input-field" placeholder="Complemento (opcional)">
+                
+                <!-- Seletor de Localização -->
+                <div class="location-selector">
+                    <label class="location-option">
+                        <input type="radio" name="location" value="cidade" onchange="calcularFrete()" checked>
+                        <span>📍 Dentro de Conchas-SP</span>
+                    </label>
+                    <label class="location-option">
+                        <input type="radio" name="location" value="fora" onchange="calcularFrete()">
+                        <span>🚗 Fora de Conchas (acima de 10km)</span>
+                    </label>
+                </div>
+
+                <!-- Info do Frete -->
+                <div id="frete-info" class="frete-info">
+                    <div class="frete-row">
+                        <span>🚚 Taxa de entrega:</span>
+                        <span id="frete-valor" class="frete-valor">R$ 3,00</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Forma de Pagamento -->
@@ -773,10 +793,22 @@
                 </div>
             </div>
 
-            <div class="cart-total">
-                <span>TOTAL:</span>
-                <span class="cart-total-price" id="cart-total">R$ 0,00</span>
+            <!-- Resumo do Pedido -->
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal-value">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Taxa de entrega:</span>
+                    <span id="frete-summary">R$ 3,00</span>
+                </div>
+                <div class="cart-total">
+                    <span>TOTAL:</span>
+                    <span class="cart-total-price" id="cart-total">R$ 0,00</span>
+                </div>
             </div>
+
             <button class="checkout-btn" onclick="enviarPedido()">
                 📱 Enviar Pedido pelo WhatsApp
             </button>
