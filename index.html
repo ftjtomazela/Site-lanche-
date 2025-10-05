@@ -826,10 +826,10 @@
                 <div id="pix-info" style="display: none;">
                     <div class="pix-container">
                         <div class="pix-qrcode">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix013640.136.528/0001-07520400005303986540525.005802BR5925LANCHES GOURMET6014CONCHAS-SP62070503***63041234" alt="QR Code PIX" style="width: 100%; border-radius: 10px;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix0136sua-chave-pix-aqui@exemplo.com520400005303986540525.005802BR5925LANCHES GOURMET6014CONCHAS-SP62070503***63041234" alt="QR Code PIX" style="width: 100%; border-radius: 10px;">
                         </div>
                         <div class="pix-key">
-                            <input type="text" id="pix-copy" value="40.136.528/0001-07" readonly class="input-field">
+                            <input type="text" id="pix-copy" value="sua-chave-pix@exemplo.com" readonly class="input-field">
                             <button class="copy-btn" onclick="copyPixKey()">📋 Copiar Chave</button>
                         </div>
                         <div class="pix-note">
@@ -869,23 +869,24 @@
 
     <script>
         var lanches = [
-            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derre, salada de repolho crocante com maionese , vinagrete de tomate e cebola, maionese no pão', preco: 19.90 },
-            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, milho verde, rucula fresca e pão hot dog brioche amante', preco: 19.90 },
-            { id: 3, nome: 'COSTELA BBQ', descricao: 'Costela bovina desfiada e suculenta, queijo provolone derretido, cebola caramelizada e molho barbecue artesanal', preco: 19.90 }
+            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90 },
+            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, queijo prato derretido, vinagrete de tomate e cebola no pão baguete.', preco: 19.90 },
+            { id: 3, nome: 'COSTELA BBQ', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 19.90 }
         ];
 
         var bebidas = [
-            { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.0
-            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 8.00 },
+            { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.00 },
+            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 6.00 },
             { id: 104, nome: 'Coca-Cola 2L', preco: 15.00 },
-            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 10.00 }
+            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 8.00 }
         ];
 
         var adicionais = [
             { id: 'bacon', nome: 'Bacon Extra', preco: 5.00 },
             { id: 'queijo', nome: 'Queijo Extra', preco: 4.00 },
             { id: 'catupiry', nome: 'Catupiry Extra', preco: 5.00 },
-            { id: 'cebola', nome: 'Cebola Caramelizada', preco: 3.00 }
+            { id: 'cebola', nome: 'Cebola Caramelizada', preco: 3.00 },
+            { id: 'repolho-maionese', nome: 'Repolho com Maionese', preco: 2.00 }
         ];
 
         var remocoes = [
@@ -894,8 +895,7 @@
             { id: 'sem-alface', nome: 'Sem Alface' },
             { id: 'sem-tomate', nome: 'Sem Tomate' },
             { id: 'sem-maionese', nome: 'Sem Maionese' },
-             { id: 'sem-repolho', nome: 'Sem Repolho com Maionese' }
-            
+            { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
         ];
 
         var cart = [];
