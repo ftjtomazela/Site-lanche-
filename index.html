@@ -1035,13 +1035,63 @@
                 }
             }
             
+            // Se for Bellpar, mostrar modal de sabores
+            if (bebida.nome.includes('Bellpar')) {
+                openSaborModal(bebida);
+            } else {
+                cart.push({
+                    id: Date.now(),
+                    tipo: 'bebida',
+                    nome: bebida.nome,
+                    preco: bebida.preco,
+                    quantidade: 1
+                });
+                updateCart();
+            }
+        }
+
+        function openSaborModal(bebida) {
+            var modalHTML = '<div class="modal active" id="sabor-modal" onclick="closeSaborModal()">';
+            modalHTML += '<div class="modal-content" onclick="event.stopPropagation()">';
+            modalHTML += '<div class="modal-header">';
+            modalHTML += '<div class="modal-title">Escolha o Sabor</div>';
+            modalHTML += '<button class="close-btn" onclick="closeSaborModal()">✕ Fechar</button>';
+            modalHTML += '</div>';
+            modalHTML += '<div class="modal-body">';
+            modalHTML += '<div class="options-section">';
+            modalHTML += '<div class="options-title">🥤 Sabores Disponíveis</div>';
+            
+            var sabores = ['Conch-Cola', 'Tubaína', 'Guaraná'];
+            for (var i = 0; i < sabores.length; i++) {
+                modalHTML += '<div class="option-item" onclick="addBebidaComSabor(\'' + bebida.nome + '\', ' + bebida.preco + ', \'' + sabores[i] + '\')">';
+                modalHTML += '<span class="option-label" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold;">' + sabores[i] + '</span>';
+                modalHTML += '</div>';
+            }
+            
+            modalHTML += '</div></div></div></div>';
+            
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = modalHTML;
+            document.body.appendChild(tempDiv.firstChild);
+        }
+
+        function closeSaborModal() {
+            var modal = document.getElementById('sabor-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function addBebidaComSabor(nomeBebida, preco, sabor) {
             cart.push({
                 id: Date.now(),
                 tipo: 'bebida',
-                nome: bebida.nome,
-                preco: bebida.preco,
-                quantidade: 1
+                nome: nomeBebida + ' - ' + sabor,
+                preco: preco,
+                quantidade: 1,
+                sabor: sabor
             });
+            closeSaborModal();
             updateCart();
         }
 
