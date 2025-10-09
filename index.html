@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lanches Gourmet - Sistema de Pedidos</title>
+    <title>Dona Baguete - Sistema de Pedidos</title>
     <style>
         * {
             margin: 0;
@@ -34,6 +34,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-image {
+            max-height: 60px;
+            height: auto;
+            max-width: 250px;
+            object-fit: contain;
         }
 
         .logo-area h1 {
@@ -701,8 +713,11 @@
     <div class="header">
         <div class="header-content">
             <div class="logo-area">
-                <h1>🍔 LANCHES GOURMET</h1>
-                <p>Delivery em Conchas-SP</p>
+                <img src="./images/logo.png" alt="Dona Baguete" class="logo-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display: none;">
+                    <h1>🍔 DONA BAGUETE</h1>
+                    <p>Delivery em Conchas-SP</p>
+                </div>
             </div>
             <button class="cart-btn" onclick="toggleCart()">
                 🛒 <span id="cart-count">0</span>
@@ -863,22 +878,60 @@
 
     <!-- Footer -->
     <div class="footer">
-        <div class="footer-phone">📱 WhatsApp: (14) 98172-2063</div>
+        <div class="footer-phone">📱 WhatsApp: (14) 99171-8704</div>
         <div class="footer-text">Delivery em Conchas-SP</div>
     </div>
 
     <script>
         var lanches = [
-            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90 },
-            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, queijo prato derretido, vinagrete de tomate e cebola no pão baguete.', preco: 19.90 },
-            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 19.90 }
+            { 
+                id: 1, 
+                nome: 'CLÁSSICO PERNIL', 
+                descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', 
+                preco: 19.90,
+                imagem: './images/pernil.png'
+            },
+            { 
+                id: 2, 
+                nome: 'FRANGO CREMOSO', 
+                descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, queijo prato derretido, vinagrete de tomate e cebola no pão baguete.', 
+                preco: 19.90,
+                imagem: './images/frango.png'
+            },
+            { 
+                id: 3, 
+                nome: 'COSTELA BBQ', 
+                descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', 
+                preco: 19.90,
+                imagem: './images/costela.png'
+            }
         ];
 
         var bebidas = [
-            { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.00 },
-            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 6.00 },
-            { id: 104, nome: 'Coca-Cola 2L', preco: 15.00 },
-            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 8.00 }
+            { 
+                id: 102, 
+                nome: 'Coca-Cola Lata 350ml', 
+                preco: 6.00,
+                imagem: './images/coca-lata.png'
+            },
+            { 
+                id: 103, 
+                nome: 'Refrigerante Bellpar 600ml', 
+                preco: 6.00,
+                imagem: './images/bellpar-600ml.png'
+            },
+            { 
+                id: 104, 
+                nome: 'Coca-Cola 2L', 
+                preco: 15.00,
+                imagem: './images/coca-2l.png'
+            },
+            { 
+                id: 105, 
+                nome: 'Refrigerante Bellpar 2L', 
+                preco: 8.00,
+                imagem: './images/bellpar-2l.png'
+            }
         ];
 
         var adicionais = [
@@ -907,7 +960,7 @@
             for (var i = 0; i < lanches.length; i++) {
                 var lanche = lanches[i];
                 html += '<div class="product-card">';
-                html += '<div class="product-image">🥖</div>';
+                html += '<div class="product-image" style="background-image: url(\'' + lanche.imagem + '\'); background-size: cover; background-position: center;"></div>';
                 html += '<div class="product-info">';
                 html += '<div class="product-name">' + lanche.nome + '</div>';
                 html += '<div class="product-description">' + lanche.descricao + '</div>';
@@ -924,7 +977,7 @@
             for (var i = 0; i < bebidas.length; i++) {
                 var bebida = bebidas[i];
                 html += '<div class="product-card">';
-                html += '<div class="product-image">🥤</div>';
+                html += '<div class="product-image" style="background-image: url(\'' + bebida.imagem + '\'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>';
                 html += '<div class="product-info">';
                 html += '<div class="product-name">' + bebida.nome + '</div>';
                 html += '<div class="product-footer">';
@@ -1273,7 +1326,7 @@
                 return;
             }
 
-            var mensagem = '*🍔 NOVO PEDIDO - LANCHES GOURMET*\n\n';
+            var mensagem = '*🍔 NOVO PEDIDO - DONA BAGUETE*\n\n';
             
             for (var i = 0; i < cart.length; i++) {
                 var item = cart[i];
@@ -1343,7 +1396,7 @@
 
             mensagem += '\n_Delivery em Conchas-SP_';
 
-            var whatsappUrl = 'https://wa.me/5514981722063?text=' + encodeURIComponent(mensagem);
+            var whatsappUrl = 'https://wa.me/5514991718704?text=' + encodeURIComponent(mensagem);
             window.open(whatsappUrl, '_blank');
         }
 
