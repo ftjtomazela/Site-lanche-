@@ -169,6 +169,17 @@
             background: #ffc107;
             transform: scale(1.05);
         }
+        
+        .add-btn:disabled, .checkout-btn:disabled, .confirm-btn:disabled {
+            background: #4b5563;
+            color: #9ca3af;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none;
+        }
+        .add-btn:disabled:hover, .checkout-btn:disabled:hover, .confirm-btn:disabled:hover {
+            background: #4b5563;
+        }
 
         .modal {
             display: none;
@@ -494,6 +505,46 @@
             border-color: #d4a021;
         }
 
+        /* ESTILOS PARA O NOVO SELETOR DE LOCALIDADE */
+        .location-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .location-option {
+            background: #374151;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            text-align: center;
+        }
+
+        .location-option:hover {
+            background: #4b5563;
+        }
+        
+        .location-option input[type="radio"] {
+            display: none;
+        }
+
+        .location-option input[type="radio"]:checked + span {
+            color: #d4a021;
+            font-weight: bold;
+        }
+
+        .location-option:has(input:checked) {
+            border-color: #d4a021;
+            background: #4b5563;
+        }
+
         .payment-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -501,14 +552,7 @@
             margin-bottom: 10px;
         }
 
-        .location-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .location-option, .payment-option {
+        .payment-option {
             background: #374151;
             padding: 12px;
             border-radius: 8px;
@@ -520,43 +564,24 @@
             border: 2px solid transparent;
         }
 
-        .location-option:hover, .payment-option:hover {
+        .payment-option:hover {
             background: #4b5563;
         }
-
-        .location-option input[type="radio"], .payment-option input[type="radio"] {
+        
+        .payment-option input[type="radio"] {
             width: 18px;
             height: 18px;
             cursor: pointer;
         }
 
-        .location-option input[type="radio"]:checked + span, .payment-option input[type="radio"]:checked + span {
+        .payment-option input[type="radio"]:checked + span {
             color: #d4a021;
             font-weight: bold;
         }
 
-        .location-option:has(input:checked), .payment-option:has(input:checked) {
+        .payment-option:has(input:checked) {
             border-color: #d4a021;
             background: #4b5563;
-        }
-
-        .frete-info {
-            background: #374151;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .frete-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .frete-valor {
-            color: #d4a021;
-            font-weight: bold;
-            font-size: 1.1rem;
         }
 
         .order-summary {
@@ -696,6 +721,76 @@
             color: #9ca3af;
             padding: 60px 20px;
         }
+        
+        #status-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #status-box {
+            background: linear-gradient(145deg, #2d3748, #1a202c);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #d4a021;
+            color: #fff;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        #status-box h2 {
+            color: #d4a021;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        #status-box p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        #notification-container {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification {
+            background: #dc2626;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateX(120%);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
 
         @media (max-width: 768px) {
             .products-grid {
@@ -709,7 +804,14 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <div id="status-overlay">
+        <div id="status-box">
+            <h2>Estamos Fechados</h2>
+            <p>Nosso horário de funcionamento é de <strong>Sexta a Domingo</strong>, das <strong>18h às 00h</strong>.</p>
+            <p>Aguardamos seu pedido em breve!</p>
+        </div>
+    </div>
+    
     <div class="header">
         <div class="header-content">
             <div class="logo-area">
@@ -725,18 +827,14 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container">
-        <!-- Lanches -->
         <h2 class="section-title">🔥 Nossos Lanches</h2>
         <div class="products-grid" id="lanches-grid"></div>
 
-        <!-- Bebidas -->
         <h2 class="section-title">🥤 Bebidas</h2>
         <div class="products-grid" id="bebidas-grid"></div>
     </div>
 
-    <!-- Modal de Personalização -->
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -772,7 +870,6 @@
         </div>
     </div>
 
-    <!-- Carrinho Sidebar -->
     <div class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header">
             <div class="cart-title">🛒 Seu Pedido</div>
@@ -782,35 +879,26 @@
             <div class="empty-cart">Carrinho vazio</div>
         </div>
         <div class="cart-footer" id="cart-footer" style="display: none;">
-            <!-- Endereço de Entrega -->
+            
             <div class="delivery-section">
-                <div class="delivery-title">📍 Endereço de Entrega</div>
-                <input type="text" id="endereco-rua" class="input-field" placeholder="Rua e Número">
-                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
-                <input type="text" id="endereco-complemento" class="input-field" placeholder="Complemento (opcional)">
+                <div class="delivery-title">📍 Local e Endereço de Entrega</div>
                 
-                <!-- Seletor de Localização -->
-                <div class="location-selector">
+                <div class="location-options">
                     <label class="location-option">
-                        <input type="radio" name="location" value="cidade" onchange="calcularFrete()" checked>
-                        <span>📍 Dentro de Conchas-SP</span>
+                        <input type="radio" name="localidade" value="dentro" onchange="atualizarFrete()">
+                        <span>🛵 Em Conchas<br>(R$ 3,00)</span>
                     </label>
                     <label class="location-option">
-                        <input type="radio" name="location" value="fora" onchange="calcularFrete()">
-                        <span>🚗 Fora de Conchas (acima de 10km)</span>
+                        <input type="radio" name="localidade" value="fora" onchange="atualizarFrete()">
+                        <span>🚗 Fora de Conchas<br>(R$ 10,00)</span>
                     </label>
                 </div>
 
-                <!-- Info do Frete -->
-                <div id="frete-info" class="frete-info">
-                    <div class="frete-row">
-                        <span>🚚 Taxa de entrega:</span>
-                        <span id="frete-valor" class="frete-valor">R$ 3,00</span>
-                    </div>
-                </div>
+                <input type="text" id="endereco-rua" class="input-field" placeholder="Rua / Avenida">
+                <input type="text" id="endereco-numero" class="input-field" placeholder="Número">
+                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
             </div>
 
-            <!-- Forma de Pagamento -->
             <div class="payment-section">
                 <div class="payment-title">💳 Forma de Pagamento</div>
                 <div class="payment-options">
@@ -832,12 +920,10 @@
                     </label>
                 </div>
                 
-                <!-- Troco para Dinheiro -->
                 <div id="troco-section" style="display: none; margin-top: 10px;">
                     <input type="text" id="troco-valor" class="input-field" placeholder="Troco para quanto? (opcional)">
                 </div>
 
-                <!-- Info PIX -->
                 <div id="pix-info" style="display: none;">
                     <div class="pix-container">
                         <div class="pix-qrcode">
@@ -854,7 +940,6 @@
                 </div>
             </div>
 
-            <!-- Resumo do Pedido -->
             <div class="order-summary">
                 <div class="summary-row">
                     <span>Subtotal:</span>
@@ -862,7 +947,7 @@
                 </div>
                 <div class="summary-row">
                     <span>Taxa de entrega:</span>
-                    <span id="frete-summary">R$ 3,00</span>
+                    <span id="frete-summary">R$ 0,00</span>
                 </div>
                 <div class="cart-total">
                     <span>TOTAL:</span>
@@ -870,104 +955,62 @@
                 </div>
             </div>
 
-            <button class="checkout-btn" onclick="enviarPedido()">
+            <button class="checkout-btn" onclick="enviarPedido()" disabled>
                 📱 Enviar Pedido pelo WhatsApp
             </button>
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <div class="footer-phone">📱 WhatsApp: (14) 99171-8704</div>
         <div class="footer-text">Delivery em Conchas-SP</div>
     </div>
 
+    <div id="notification-container"></div>
+
     <script>
         var lanches = [
-            { 
-                id: 1, 
-                nome: 'CLÁSSICO PERNIL', 
-                descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', 
-                preco: 21.90,
-                imagem: './images/pernil.png'
-            },
-            { 
-                id: 2, 
-                nome: 'FRANGO CREMOSO', 
-                descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', 
-                preco: 21.90,
-                imagem: './images/frango.png'
-            },
-            { 
-                id: 3, 
-                nome: 'COSTELA ESPECIAL', 
-                descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', 
-                preco: 21.90,
-                imagem: './images/costela.png'
-            }
+            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90, imagem: 'pernil.png' },
+            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'frango.png' },
+            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'costela.png' }
         ];
 
         var bebidas = [
-            { 
-                id: 102, 
-                nome: 'Coca-Cola Lata 350ml', 
-                preco: 6.00,
-                imagem: 'coca-lata.png'
-            },
-            { 
-                id: 103, 
-                nome: 'Refrigerante Bellpar 600ml', 
-                preco: 6.00,
-                imagem: 'bellpar-600ml.png'
-            },
-            { 
-                id: 104, 
-                nome: 'Coca-Cola 2L', 
-                preco: 15.00,
-                imagem: 'coca-2l.png'
-            },
-            { 
-                id: 105, 
-                nome: 'Refrigerante Bellpar 2L', 
-                preco: 8.00,
-                imagem: 'bellpar-600ml.png'
-            }
+            { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.00, imagem: 'coca-lata.png' },
+            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 6.00, imagem: 'bellpar-600ml.png' },
+            { id: 104, nome: 'Coca-Cola 2L', preco: 15.00, imagem: 'coca-2l.png' },
+            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 8.00, imagem: 'bellpar-600ml.png' }
         ];
 
         var adicionais = [
-            { id: 'bacon', nome: 'Bacon Extra', preco: 5.00 },
-            { id: 'queijo', nome: 'Queijo Extra', preco: 4.00 },
-            { id: 'catupiry', nome: 'Catupiry Extra', preco: 5.00 },
-            { id: 'cebola', nome: 'Cebola Caramelizada', preco: 3.00 },
-            { id: 'repolho-maionese', nome: 'Repolho com Maionese', preco: 2.00 }
+            { id: 'bacon', nome: 'Bacon Extra', preco: 5.00 }, { id: 'queijo', nome: 'Queijo Extra', preco: 4.00 }, { id: 'catupiry', nome: 'Catupiry Extra', preco: 5.00 },  { id: 'repolho-maionese', nome: 'Repolho com Maionese', preco: 2.00 }
         ];
 
         var remocoes = [
-            { id: 'sem-bacon', nome: 'Sem Bacon' },
-            { id: 'sem-queijo', nome: 'Sem Queijo' },
-            { id: 'sem-alface', nome: 'Sem Alface' },
-            { id: 'sem-tomate', nome: 'Sem Tomate' },
-            { id: 'sem-maionese', nome: 'Sem Maionese' },
-            { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
+            { id: 'sem-bacon', nome: 'Sem Bacon' }, { id: 'sem-queijo', nome: 'Sem Queijo' }, { id: 'sem-alface', nome: 'Sem Alface' }, { id: 'sem-tomate', nome: 'Sem Vinagrete (Tomate e Cebola)' }, { id: 'sem-maionese', nome: 'Sem Maionese' }, { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
         ];
 
         var cart = [];
         var currentLanche = null;
-        var freteAtual = 3.00;
+        var freteAtual = 0;
+        
+        // Funções da API do Google Maps foram removidas.
 
         function renderLanches() {
             var html = '';
             for (var i = 0; i < lanches.length; i++) {
                 var lanche = lanches[i];
-                html += '<div class="product-card">';
-                html += '<div class="product-image" style="background-image: url(\'' + lanche.imagem + '\'); background-size: cover; background-position: center;"></div>';
-                html += '<div class="product-info">';
-                html += '<div class="product-name">' + lanche.nome + '</div>';
-                html += '<div class="product-description">' + lanche.descricao + '</div>';
-                html += '<div class="product-footer">';
-                html += '<div class="product-price">R$ ' + lanche.preco.toFixed(2) + '</div>';
-                html += '<button class="add-btn" onclick="openModal(' + lanche.id + ')">Adicionar</button>';
-                html += '</div></div></div>';
+                html += `<div class="product-card">
+                    <div class="product-image" style="background-image: url('${lanche.imagem}'); background-size: contain; background-position: center; background-repeat: no-repeat; "></div>
+                    <div class="product-info">
+                        <div class="product-name">${lanche.nome}</div>
+                        <div class="product-description">${lanche.descricao}</div>
+                        <div class="product-footer">
+                            <div class="product-price">R$ ${lanche.preco.toFixed(2).replace('.', ',')}</div>
+                            <button class="add-btn" onclick="openModal(${lanche.id})">Adicionar</button>
+                        </div>
+                    </div>
+                </div>`;
             }
             document.getElementById('lanches-grid').innerHTML = html;
         }
@@ -976,48 +1019,40 @@
             var html = '';
             for (var i = 0; i < bebidas.length; i++) {
                 var bebida = bebidas[i];
-                html += '<div class="product-card">';
-                html += '<div class="product-image" style="background-image: url(\'' + bebida.imagem + '\'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>';
-                html += '<div class="product-info">';
-                html += '<div class="product-name">' + bebida.nome + '</div>';
-                html += '<div class="product-footer">';
-                html += '<div class="product-price">R$ ' + bebida.preco.toFixed(2) + '</div>';
-                html += '<button class="add-btn" onclick="addBebidaToCart(' + bebida.id + ')">Adicionar</button>';
-                html += '</div></div></div>';
+                html += `<div class="product-card">
+                    <div class="product-image" style="background-image: url('${bebida.imagem}'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+                    <div class="product-info">
+                        <div class="product-name">${bebida.nome}</div>
+                        <div class="product-footer">
+                            <div class="product-price">R$ ${bebida.preco.toFixed(2).replace('.', ',')}</div>
+                            <button class="add-btn" onclick="addBebidaToCart(${bebida.id})">Adicionar</button>
+                        </div>
+                    </div>
+                </div>`;
             }
             document.getElementById('bebidas-grid').innerHTML = html;
         }
 
         function openModal(lancheId) {
-            for (var i = 0; i < lanches.length; i++) {
-                if (lanches[i].id === lancheId) {
-                    currentLanche = lanches[i];
-                    break;
-                }
-            }
+            if (!verificarHorarioFuncionamento()) return;
+            currentLanche = lanches.find(l => l.id === lancheId);
             
             document.getElementById('modal-title').textContent = currentLanche.nome;
             document.getElementById('observacao').value = '';
             
-            var adicionaisHTML = '';
-            for (var i = 0; i < adicionais.length; i++) {
-                var ad = adicionais[i];
-                adicionaisHTML += '<div class="option-item">';
-                adicionaisHTML += '<input type="checkbox" class="adicional-check" data-id="' + ad.id + '" data-preco="' + ad.preco + '" data-nome="' + ad.nome + '" onchange="updateModalTotal()">';
-                adicionaisHTML += '<span class="option-label">' + ad.nome + '</span>';
-                adicionaisHTML += '<span class="option-price">+ R$ ' + ad.preco.toFixed(2) + '</span>';
-                adicionaisHTML += '</div>';
-            }
+            var adicionaisHTML = adicionais.map(ad => `
+                <div class="option-item">
+                    <input type="checkbox" class="adicional-check" data-id="${ad.id}" data-preco="${ad.preco}" data-nome="${ad.nome}" onchange="updateModalTotal()">
+                    <span class="option-label">${ad.nome}</span>
+                    <span class="option-price">+ R$ ${ad.preco.toFixed(2).replace('.', ',')}</span>
+                </div>`).join('');
             document.getElementById('adicionais-container').innerHTML = adicionaisHTML;
 
-            var removesHTML = '';
-            for (var i = 0; i < remocoes.length; i++) {
-                var rem = remocoes[i];
-                removesHTML += '<div class="option-item">';
-                removesHTML += '<input type="checkbox" class="remocao-check" data-id="' + rem.id + '" data-nome="' + rem.nome + '">';
-                removesHTML += '<span class="option-label">' + rem.nome + '</span>';
-                removesHTML += '</div>';
-            }
+            var removesHTML = remocoes.map(rem => `
+                <div class="option-item">
+                    <input type="checkbox" class="remocao-check" data-id="${rem.id}" data-nome="${rem.nome}">
+                    <span class="option-label">${rem.nome}</span>
+                </div>`).join('');
             document.getElementById('remocoes-container').innerHTML = removesHTML;
 
             updateModalTotal();
@@ -1026,11 +1061,10 @@
 
         function updateModalTotal() {
             var total = currentLanche.preco;
-            var checks = document.querySelectorAll('.adicional-check:checked');
-            for (var i = 0; i < checks.length; i++) {
-                total += parseFloat(checks[i].dataset.preco);
-            }
-            document.getElementById('modal-total').textContent = 'R$ ' + total.toFixed(2);
+            document.querySelectorAll('.adicional-check:checked').forEach(check => {
+                total += parseFloat(check.dataset.preco);
+            });
+            document.getElementById('modal-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
         }
 
         function closeModal() {
@@ -1038,240 +1072,129 @@
         }
 
         function addLancheToCart() {
-            var selectedAdicionais = [];
-            var checks = document.querySelectorAll('.adicional-check:checked');
-            for (var i = 0; i < checks.length; i++) {
-                selectedAdicionais.push({
-                    id: checks[i].dataset.id,
-                    nome: checks[i].dataset.nome,
-                    preco: parseFloat(checks[i].dataset.preco)
-                });
-            }
-
-            var selectedRemocoes = [];
-            var remChecks = document.querySelectorAll('.remocao-check:checked');
-            for (var i = 0; i < remChecks.length; i++) {
-                selectedRemocoes.push({
-                    id: remChecks[i].dataset.id,
-                    nome: remChecks[i].dataset.nome
-                });
-            }
-
+            var selectedAdicionais = Array.from(document.querySelectorAll('.adicional-check:checked')).map(check => ({
+                id: check.dataset.id, nome: check.dataset.nome, preco: parseFloat(check.dataset.preco)
+            }));
+            var selectedRemocoes = Array.from(document.querySelectorAll('.remocao-check:checked')).map(check => ({
+                id: check.dataset.id, nome: check.dataset.nome
+            }));
             var observacao = document.getElementById('observacao').value;
-            var precoTotal = currentLanche.preco;
-            for (var i = 0; i < selectedAdicionais.length; i++) {
-                precoTotal += selectedAdicionais[i].preco;
-            }
+            var precoTotal = currentLanche.preco + selectedAdicionais.reduce((sum, ad) => sum + ad.preco, 0);
 
-            cart.push({
-                id: Date.now(),
-                tipo: 'lanche',
-                nome: currentLanche.nome,
-                preco: currentLanche.preco,
-                precoTotal: precoTotal,
-                adicionais: selectedAdicionais,
-                remocoes: selectedRemocoes,
-                observacao: observacao,
-                quantidade: 1
-            });
-
+            cart.push({ id: Date.now(), tipo: 'lanche', nome: currentLanche.nome, preco: currentLanche.preco, precoTotal, adicionais: selectedAdicionais, remocoes: selectedRemocoes, observacao, quantidade: 1 });
             closeModal();
             updateCart();
         }
 
         function addBebidaToCart(bebidaId) {
-            var bebida = null;
-            for (var i = 0; i < bebidas.length; i++) {
-                if (bebidas[i].id === bebidaId) {
-                    bebida = bebidas[i];
-                    break;
-                }
-            }
-            
-            // Se for Bellpar, mostrar modal de sabores
+            if (!verificarHorarioFuncionamento()) return;
+            var bebida = bebidas.find(b => b.id === bebidaId);
             if (bebida.nome.includes('Bellpar')) {
                 openSaborModal(bebida);
             } else {
-                cart.push({
-                    id: Date.now(),
-                    tipo: 'bebida',
-                    nome: bebida.nome,
-                    preco: bebida.preco,
-                    quantidade: 1
-                });
+                cart.push({ id: Date.now(), tipo: 'bebida', nome: bebida.nome, preco: bebida.preco, quantidade: 1 });
                 updateCart();
             }
         }
 
         function openSaborModal(bebida) {
-            var modalHTML = '<div class="modal active" id="sabor-modal" onclick="closeSaborModal()">';
-            modalHTML += '<div class="modal-content" onclick="event.stopPropagation()">';
-            modalHTML += '<div class="modal-header">';
-            modalHTML += '<div class="modal-title">Escolha o Sabor</div>';
-            modalHTML += '<button class="close-btn" onclick="closeSaborModal()">✕ Fechar</button>';
-            modalHTML += '</div>';
-            modalHTML += '<div class="modal-body">';
-            modalHTML += '<div class="options-section">';
-            modalHTML += '<div class="options-title">🥤 Sabores Disponíveis</div>';
-            
             var sabores = ['Conch-Cola', 'Tubaína', 'Guaraná'];
-            for (var i = 0; i < sabores.length; i++) {
-                modalHTML += '<div class="option-item" onclick="addBebidaComSabor(\'' + bebida.nome + '\', ' + bebida.preco + ', \'' + sabores[i] + '\')">';
-                modalHTML += '<span class="option-label" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold;">' + sabores[i] + '</span>';
-                modalHTML += '</div>';
-            }
-            
-            modalHTML += '</div></div></div></div>';
-            
-            var tempDiv = document.createElement('div');
-            tempDiv.innerHTML = modalHTML;
-            document.body.appendChild(tempDiv.firstChild);
+            var saboresHTML = sabores.map(sabor => `
+                <div class="option-item" onclick="addBebidaComSabor('${bebida.nome}', ${bebida.preco}, '${sabor}')">
+                    <span class="option-label" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold;">${sabor}</span>
+                </div>`).join('');
+
+            var modalHTML = `
+                <div class="modal active" id="sabor-modal" onclick="closeSaborModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <div class="modal-title">Escolha o Sabor</div>
+                            <button class="close-btn" onclick="closeSaborModal()">✕ Fechar</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="options-section">
+                                <div class="options-title">🥤 Sabores Disponíveis</div>
+                                ${saboresHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
 
         function closeSaborModal() {
             var modal = document.getElementById('sabor-modal');
-            if (modal) {
-                modal.remove();
-            }
+            if (modal) modal.remove();
         }
 
         function addBebidaComSabor(nomeBebida, preco, sabor) {
-            cart.push({
-                id: Date.now(),
-                tipo: 'bebida',
-                nome: nomeBebida + ' - ' + sabor,
-                preco: preco,
-                quantidade: 1,
-                sabor: sabor
-            });
+            cart.push({ id: Date.now(), tipo: 'bebida', nome: `${nomeBebida} - ${sabor}`, preco, quantidade: 1, sabor });
             closeSaborModal();
             updateCart();
         }
 
         function updateCart() {
             document.getElementById('cart-count').textContent = cart.length;
-
             var cartFooter = document.getElementById('cart-footer');
+            var cartItems = document.getElementById('cart-items');
 
             if (cart.length === 0) {
-                document.getElementById('cart-items').innerHTML = '<div class="empty-cart">Carrinho vazio</div>';
+                cartItems.innerHTML = '<div class="empty-cart">Carrinho vazio</div>';
                 cartFooter.style.display = 'none';
                 return;
             }
-
             cartFooter.style.display = 'block';
 
-            var cartHTML = '';
-            for (var i = 0; i < cart.length; i++) {
-                var item = cart[i];
-                cartHTML += '<div class="cart-item">';
-                cartHTML += '<div class="cart-item-header">';
-                cartHTML += '<div class="cart-item-name">' + item.nome + '</div>';
-                cartHTML += '<button class="remove-btn" onclick="removeFromCart(' + item.id + ')">🗑️</button>';
-                cartHTML += '</div>';
+            cartItems.innerHTML = cart.map(item => {
+                let details = '';
+                if (item.adicionais && item.adicionais.length > 0) details += `➕ ${item.adicionais.map(ad => ad.nome).join(', ')}<br>`;
+                if (item.remocoes && item.remocoes.length > 0) details += `➖ ${item.remocoes.map(rem => rem.nome).join(', ')}<br>`;
+                if (item.observacao) details += `📝 ${item.observacao}`;
                 
-                var details = '';
-                if (item.adicionais && item.adicionais.length > 0) {
-                    var adNames = [];
-                    for (var j = 0; j < item.adicionais.length; j++) {
-                        adNames.push(item.adicionais[j].nome);
-                    }
-                    details += '➕ ' + adNames.join(', ') + '<br>';
-                }
-                
-                if (item.remocoes && item.remocoes.length > 0) {
-                    var remNames = [];
-                    for (var j = 0; j < item.remocoes.length; j++) {
-                        remNames.push(item.remocoes[j].nome);
-                    }
-                    details += '➖ ' + remNames.join(', ') + '<br>';
-                }
-                
-                if (item.observacao) {
-                    details += '📝 ' + item.observacao;
-                }
-
-                if (details) {
-                    cartHTML += '<div class="cart-item-details">' + details + '</div>';
-                }
-
-                cartHTML += '<div class="cart-item-footer">';
-                cartHTML += '<div class="quantity-controls">';
-                cartHTML += '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', -1)">−</button>';
-                cartHTML += '<span class="qty-value">' + item.quantidade + '</span>';
-                cartHTML += '<button class="qty-btn" onclick="updateQuantity(' + item.id + ', 1)">+</button>';
-                cartHTML += '</div>';
                 var itemPreco = (item.precoTotal || item.preco) * item.quantidade;
-                cartHTML += '<div class="cart-item-price">R$ ' + itemPreco.toFixed(2) + '</div>';
-                cartHTML += '</div></div>';
-            }
 
-            document.getElementById('cart-items').innerHTML = cartHTML;
+                return `<div class="cart-item">
+                    <div class="cart-item-header">
+                        <div class="cart-item-name">${item.nome}</div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">🗑️</button>
+                    </div>
+                    ${details ? `<div class="cart-item-details">${details}</div>` : ''}
+                    <div class="cart-item-footer">
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">−</button>
+                            <span class="qty-value">${item.quantidade}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <div class="cart-item-price">R$ ${itemPreco.toFixed(2).replace('.', ',')}</div>
+                    </div>
+                </div>`;
+            }).join('');
             updateCartTotal();
         }
 
         function updateCartTotal() {
-            var subtotal = 0;
-            for (var i = 0; i < cart.length; i++) {
-                subtotal += ((cart[i].precoTotal || cart[i].preco) * cart[i].quantidade);
-            }
-            
+            var subtotal = cart.reduce((sum, item) => sum + (item.precoTotal || item.preco) * item.quantidade, 0);
             var total = subtotal + freteAtual;
-            
-            document.getElementById('subtotal-value').textContent = 'R$ ' + subtotal.toFixed(2);
-            document.getElementById('cart-total').textContent = 'R$ ' + total.toFixed(2);
+            document.getElementById('subtotal-value').textContent = 'R$ ' + subtotal.toFixed(2).replace('.', ',');
+            document.getElementById('cart-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
         }
 
         function removeFromCart(id) {
-            var newCart = [];
-            for (var i = 0; i < cart.length; i++) {
-                if (cart[i].id !== id) {
-                    newCart.push(cart[i]);
-                }
-            }
-            cart = newCart;
+            cart = cart.filter(item => item.id !== id);
             updateCart();
         }
 
         function updateQuantity(id, delta) {
-            var newCart = [];
-            for (var i = 0; i < cart.length; i++) {
-                if (cart[i].id === id) {
-                    cart[i].quantidade += delta;
-                    if (cart[i].quantidade > 0) {
-                        newCart.push(cart[i]);
-                    }
-                } else {
-                    newCart.push(cart[i]);
-                }
+            var item = cart.find(item => item.id === id);
+            if (item) {
+                item.quantidade += delta;
+                if (item.quantidade <= 0) removeFromCart(id);
+                else updateCart();
             }
-            cart = newCart;
-            updateCart();
-        }
-
-        function calcularFrete() {
-            var location = document.querySelector('input[name="location"]:checked');
-            if (!location) return;
-
-            if (location.value === 'cidade') {
-                freteAtual = 3.00;
-            } else {
-                freteAtual = 10.00;
-            }
-
-            document.getElementById('frete-valor').textContent = 'R$ ' + freteAtual.toFixed(2);
-            document.getElementById('frete-summary').textContent = 'R$ ' + freteAtual.toFixed(2);
-            
-            updateCartTotal();
         }
 
         function toggleCart() {
-            var sidebar = document.getElementById('cart-sidebar');
-            if (sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            } else {
-                sidebar.classList.add('active');
-            }
+            document.getElementById('cart-sidebar').classList.toggle('active');
         }
 
         function showPixInfo() {
@@ -1282,126 +1205,130 @@
         function hidePixInfo() {
             document.getElementById('pix-info').style.display = 'none';
             var pagamento = document.querySelector('input[name="payment"]:checked');
-            if (pagamento && pagamento.value === 'dinheiro') {
-                document.getElementById('troco-section').style.display = 'block';
-            } else {
-                document.getElementById('troco-section').style.display = 'none';
-            }
+            document.getElementById('troco-section').style.display = pagamento && pagamento.value === 'dinheiro' ? 'block' : 'none';
         }
 
         function copyPixKey() {
             var pixKey = document.getElementById('pix-copy');
             pixKey.select();
-            pixKey.setSelectionRange(0, 99999);
             document.execCommand('copy');
-            
             var btn = event.target;
             var originalText = btn.textContent;
             btn.textContent = '✅ Copiado!';
             btn.style.background = '#10b981';
+            setTimeout(() => { btn.textContent = originalText; btn.style.background = '#d4a021'; }, 2000);
+        }
+
+        // NOVA FUNÇÃO PARA ATUALIZAR O FRETE COM BASE NA SELEÇÃO
+        function atualizarFrete() {
+            const selecao = document.querySelector('input[name="localidade"]:checked').value;
+            const checkoutBtn = document.querySelector('.checkout-btn');
+
+            if (selecao === 'dentro') {
+                freteAtual = 3.00;
+            } else if (selecao === 'fora') {
+                freteAtual = 10.00;
+            } else {
+                freteAtual = 0;
+            }
+
+            const feeText = `R$ ${freteAtual.toFixed(2).replace('.', ',')}`;
+            document.getElementById('frete-summary').textContent = feeText;
             
-            setTimeout(function() {
-                btn.textContent = originalText;
-                btn.style.background = '#d4a021';
-            }, 2000);
+            checkoutBtn.disabled = false; // Habilita o botão de finalizar
+            updateCartTotal();
         }
 
         function enviarPedido() {
             if (cart.length === 0) {
-                alert('Adicione itens ao carrinho primeiro!');
+                showNotification('Adicione itens ao carrinho primeiro!');
                 return;
             }
-
-            var rua = document.getElementById('endereco-rua').value.trim();
-            var bairro = document.getElementById('endereco-bairro').value.trim();
             
-            if (!rua || !bairro) {
-                alert('Por favor, preencha o endereço de entrega!');
+            var localidade = document.querySelector('input[name="localidade"]:checked');
+            if (!localidade) {
+                showNotification('Por favor, selecione o local da entrega!');
+                return;
+            }
+            
+            var rua = document.getElementById('endereco-rua').value.trim();
+            var numero = document.getElementById('endereco-numero').value.trim();
+            var bairro = document.getElementById('endereco-bairro').value.trim();
+            if (!rua || !numero || !bairro) {
+                showNotification('Preencha seu endereço completo (Rua, Número e Bairro)!');
                 return;
             }
 
             var pagamento = document.querySelector('input[name="payment"]:checked');
             if (!pagamento) {
-                alert('Por favor, selecione a forma de pagamento!');
+                showNotification('Por favor, selecione a forma de pagamento!');
                 return;
             }
 
-            var mensagem = '*🍔 NOVO PEDIDO - DONA BAGUETE*\n\n';
-            
-            for (var i = 0; i < cart.length; i++) {
-                var item = cart[i];
-                mensagem += '*' + (i + 1) + '. ' + item.nome + '* (' + item.quantidade + 'x)\n';
-                mensagem += '   💰 R$ ' + ((item.precoTotal || item.preco) * item.quantidade).toFixed(2) + '\n';
-                
-                if (item.adicionais && item.adicionais.length > 0) {
-                    var adNames = [];
-                    for (var j = 0; j < item.adicionais.length; j++) {
-                        adNames.push(item.adicionais[j].nome);
-                    }
-                    mensagem += '   ➕ Adicionais: ' + adNames.join(', ') + '\n';
-                }
-                
-                if (item.remocoes && item.remocoes.length > 0) {
-                    var remNames = [];
-                    for (var j = 0; j < item.remocoes.length; j++) {
-                        remNames.push(item.remocoes[j].nome);
-                    }
-                    mensagem += '   ➖ Remover: ' + remNames.join(', ') + '\n';
-                }
-                
-                if (item.observacao) {
-                    mensagem += '   📝 Obs: ' + item.observacao + '\n';
-                }
-                mensagem += '\n';
-            }
-
-            var subtotal = 0;
-            for (var i = 0; i < cart.length; i++) {
-                subtotal += ((cart[i].precoTotal || cart[i].preco) * cart[i].quantidade);
-            }
-
+            var subtotal = cart.reduce((sum, item) => sum + (item.precoTotal || item.preco) * item.quantidade, 0);
             var total = subtotal + freteAtual;
-
-            mensagem += '*SUBTOTAL: R$ ' + subtotal.toFixed(2) + '*\n';
-            mensagem += '*TAXA DE ENTREGA: R$ ' + freteAtual.toFixed(2) + '*\n';
-            mensagem += '*TOTAL: R$ ' + total.toFixed(2) + '*\n\n';
-
-            var complemento = document.getElementById('endereco-complemento').value.trim();
-            var localizacao = document.querySelector('input[name="location"]:checked');
-            var localizacaoTexto = localizacao.value === 'cidade' ? 'Dentro de Conchas-SP' : 'Fora de Conchas (acima de 10km)';
+            var tipoEntrega = localidade.value === 'dentro' ? 'Em Conchas' : 'Fora de Conchas';
             
-            mensagem += '*📍 ENDEREÇO DE ENTREGA*\n';
-            mensagem += rua + '\n';
-            mensagem += bairro + '\n';
-            if (complemento) {
-                mensagem += complemento + '\n';
-            }
-            mensagem += '📌 ' + localizacaoTexto + '\n\n';
+            let mensagem = `*🍔 NOVO PEDIDO - DONA BAGUETE*\n\n${cart.map((item, i) => {
+                let itemText = `*${i + 1}. ${item.nome}* (${item.quantidade}x)\n   💰 R$ ${((item.precoTotal || item.preco) * item.quantidade).toFixed(2).replace('.', ',')}\n`;
+                if (item.adicionais && item.adicionais.length > 0) itemText += `   ➕ Adicionais: ${item.adicionais.map(ad => ad.nome).join(', ')}\n`;
+                if (item.remocoes && item.remocoes.length > 0) itemText += `   ➖ Remover: ${item.remocoes.map(rem => rem.nome).join(', ')}\n`;
+                if (item.observacao) itemText += `   📝 Obs: ${item.observacao}\n`;
+                return itemText;
+            }).join('\n')}
+*SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.', ',')}*
+*TAXA DE ENTREGA: R$ ${freteAtual.toFixed(2).replace('.', ',')}*
+*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*
 
-            var pagamentoTexto = {
-                'pix': '💚 PIX',
-                'credito': '💳 Cartão de Crédito',
-                'debito': '💳 Cartão de Débito',
-                'dinheiro': '💵 Dinheiro'
-            };
-            mensagem += '*💳 FORMA DE PAGAMENTO*\n';
-            mensagem += pagamentoTexto[pagamento.value] + '\n';
+*📍 ENDEREÇO DE ENTREGA*
+*Local:* ${tipoEntrega}
+*Endereço:* ${rua}, ${numero}
+*Bairro:* ${bairro}
 
-            if (pagamento.value === 'dinheiro') {
-                var troco = document.getElementById('troco-valor').value.trim();
-                if (troco) {
-                    mensagem += 'Troco para: R$ ' + troco + '\n';
-                }
-            }
+*💳 FORMA DE PAGAMENTO*
+${document.querySelector('input[name="payment"]:checked + span').textContent.trim()}
+${pagamento.value === 'dinheiro' && document.getElementById('troco-valor').value.trim() ? `Troco para: R$ ${document.getElementById('troco-valor').value.trim()}` : ''}
 
-            mensagem += '\n_Delivery em Conchas-SP_';
-
+_Delivery em Conchas-SP_`;
+            
             var whatsappUrl = 'https://wa.me/5514991718704?text=' + encodeURIComponent(mensagem);
             window.open(whatsappUrl, '_blank');
         }
 
-        renderLanches();
-        renderBebidas();
+        function showNotification(message, type = 'error') {
+            var container = document.getElementById('notification-container');
+            var notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.textContent = message;
+            container.appendChild(notif);
+            setTimeout(() => notif.classList.add('show'), 10);
+            setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => notif.remove(), 400);
+            }, 3000);
+        }
+
+        function verificarHorarioFuncionamento() {
+            var agora = new Date();
+            var dia = agora.getDay();
+            var hora = agora.getHours();
+            var diasAbertos = [4, 5, 6, 0]; // Sexta, Sábado, Domingo
+            var horarioAberto = hora >= 10;
+            return diasAbertos.includes(dia) && horarioAberto;
+        }
+
+        function gerenciarStatusLoja() {
+            if (!verificarHorarioFuncionamento()) {
+                document.getElementById('status-overlay').style.display = 'flex';
+                document.querySelectorAll('.add-btn, .confirm-btn, .checkout-btn').forEach(btn => btn.disabled = true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLanches();
+            renderBebidas();
+            gerenciarStatusLoja();
+        });
     </script>
 </body>
 </html>
