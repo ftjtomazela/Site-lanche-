@@ -505,10 +505,9 @@
             border-color: #d4a021;
         }
 
-        /* ESTILOS PARA O NOVO SELETOR DE LOCALIDADE */
         .location-options {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 15px;
         }
@@ -800,6 +799,10 @@
             .cart-sidebar {
                 max-width: 100%;
             }
+            /* AJUSTE PARA TORNAR OS BOTÕES RESPONSIVOS */
+            .location-options {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -815,7 +818,7 @@
     <div class="header">
         <div class="header-content">
             <div class="logo-area">
-                <img src="./images/logo.png" alt="Dona Baguete" class="logo-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <img src="ogo.png" alt="Dona Baguete" class="logo-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                 <div style="display: none;">
                     <h1>🍔 DONA BAGUETE</h1>
                     <p>Delivery em Conchas-SP</p>
@@ -881,10 +884,10 @@
         <div class="cart-footer" id="cart-footer" style="display: none;">
             
             <div class="delivery-section">
-                <div class="delivery-title">📍 Local e Endereço de Entrega</div>
+                <div class="delivery-title">📍 Escolha Entrega ou Retirada</div>
                 
                 <div class="location-options">
-                    <label class="location-option">
+                     <label class="location-option">
                         <input type="radio" name="localidade" value="dentro" onchange="atualizarFrete()">
                         <span>🛵 Em Conchas<br>(R$ 3,00)</span>
                     </label>
@@ -892,11 +895,24 @@
                         <input type="radio" name="localidade" value="fora" onchange="atualizarFrete()">
                         <span>🚗 Fora de Conchas<br>(R$ 10,00)</span>
                     </label>
+                    <label class="location-option">
+                        <input type="radio" name="localidade" value="retirada" onchange="atualizarFrete()">
+                        <span>📍 Retirar no Local<br>(Grátis)</span>
+                    </label>
                 </div>
 
-                <input type="text" id="endereco-rua" class="input-field" placeholder="Rua / Avenida">
-                <input type="text" id="endereco-numero" class="input-field" placeholder="Número">
-                <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
+                <div id="endereco-inputs" style="display: none;">
+                    <input type="text" id="endereco-rua" class="input-field" placeholder="Rua / Avenida">
+                    <input type="text" id="endereco-numero" class="input-field" placeholder="Número">
+                    <input type="text" id="endereco-bairro" class="input-field" placeholder="Bairro">
+                </div>
+                
+                <div id="retirada-info" class="input-field" style="display: none; text-align: center; line-height: 1.5; padding: 15px; background: #1a202c;">
+                    <strong>Endereço para Retirada:</strong><br>
+                    Rua Romualdo Albino Balestrin, 35<br>
+                    COHAB III - Conchas/SP
+                </div>
+
             </div>
 
             <div class="payment-section">
@@ -977,9 +993,9 @@
 
         var bebidas = [
             { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.00, imagem: 'coca-lata.png' },
-            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 6.00, imagem: 'bellpar-600ml.png' },
+            { id: 103, nome: 'Refrigerante Bellpar 600ml', preco: 5.00, imagem: 'bellpar-600ml.png' },
             { id: 104, nome: 'Coca-Cola 2L', preco: 15.00, imagem: 'coca-2l.png' },
-            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 8.00, imagem: 'bellpar-600ml.png' }
+            { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 7.00, imagem: 'bellpar-600ml.png' }
         ];
 
         var adicionais = [
@@ -994,8 +1010,6 @@
         var currentLanche = null;
         var freteAtual = 0;
         
-        // Funções da API do Google Maps foram removidas.
-
         function renderLanches() {
             var html = '';
             for (var i = 0; i < lanches.length; i++) {
@@ -1219,23 +1233,30 @@
             setTimeout(() => { btn.textContent = originalText; btn.style.background = '#d4a021'; }, 2000);
         }
 
-        // NOVA FUNÇÃO PARA ATUALIZAR O FRETE COM BASE NA SELEÇÃO
         function atualizarFrete() {
             const selecao = document.querySelector('input[name="localidade"]:checked').value;
             const checkoutBtn = document.querySelector('.checkout-btn');
+            const enderecoDiv = document.getElementById('endereco-inputs');
+            const retiradaDiv = document.getElementById('retirada-info');
 
             if (selecao === 'dentro') {
                 freteAtual = 3.00;
+                enderecoDiv.style.display = 'block';
+                retiradaDiv.style.display = 'none';
             } else if (selecao === 'fora') {
                 freteAtual = 10.00;
-            } else {
-                freteAtual = 0;
+                enderecoDiv.style.display = 'block';
+                retiradaDiv.style.display = 'none';
+            } else if (selecao === 'retirada') {
+                freteAtual = 0.00;
+                enderecoDiv.style.display = 'none';
+                retiradaDiv.style.display = 'block';
             }
 
             const feeText = `R$ ${freteAtual.toFixed(2).replace('.', ',')}`;
             document.getElementById('frete-summary').textContent = feeText;
             
-            checkoutBtn.disabled = false; // Habilita o botão de finalizar
+            checkoutBtn.disabled = false;
             updateCartTotal();
         }
 
@@ -1251,12 +1272,15 @@
                 return;
             }
             
-            var rua = document.getElementById('endereco-rua').value.trim();
-            var numero = document.getElementById('endereco-numero').value.trim();
-            var bairro = document.getElementById('endereco-bairro').value.trim();
-            if (!rua || !numero || !bairro) {
-                showNotification('Preencha seu endereço completo (Rua, Número e Bairro)!');
-                return;
+            // Validação de endereço apenas se não for retirada
+            if (localidade.value !== 'retirada') {
+                var rua = document.getElementById('endereco-rua').value.trim();
+                var numero = document.getElementById('endereco-numero').value.trim();
+                var bairro = document.getElementById('endereco-bairro').value.trim();
+                if (!rua || !numero || !bairro) {
+                    showNotification('Preencha seu endereço completo (Rua, Número e Bairro)!');
+                    return;
+                }
             }
 
             var pagamento = document.querySelector('input[name="payment"]:checked');
@@ -1267,7 +1291,6 @@
 
             var subtotal = cart.reduce((sum, item) => sum + (item.precoTotal || item.preco) * item.quantidade, 0);
             var total = subtotal + freteAtual;
-            var tipoEntrega = localidade.value === 'dentro' ? 'Em Conchas' : 'Fora de Conchas';
             
             let mensagem = `*🍔 NOVO PEDIDO - DONA BAGUETE*\n\n${cart.map((item, i) => {
                 let itemText = `*${i + 1}. ${item.nome}* (${item.quantidade}x)\n   💰 R$ ${((item.precoTotal || item.preco) * item.quantidade).toFixed(2).replace('.', ',')}\n`;
@@ -1278,18 +1301,19 @@
             }).join('\n')}
 *SUBTOTAL: R$ ${subtotal.toFixed(2).replace('.', ',')}*
 *TAXA DE ENTREGA: R$ ${freteAtual.toFixed(2).replace('.', ',')}*
-*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*
+*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*\n\n`;
 
-*📍 ENDEREÇO DE ENTREGA*
-*Local:* ${tipoEntrega}
-*Endereço:* ${rua}, ${numero}
-*Bairro:* ${bairro}
+            if (localidade.value === 'retirada') {
+                mensagem += `*MODO DE ENTREGA: RETIRADA NO LOCAL*\n_Endereço: Rua Romualdo Albino Balestrin, 35 - COHAB III_\n\n`;
+            } else {
+                var tipoEntrega = localidade.value === 'dentro' ? 'Em Conchas' : 'Fora de Conchas';
+                mensagem += `*ENDEREÇO DE ENTREGA*\n*Local:* ${tipoEntrega}\n*Endereço:* ${document.getElementById('endereco-rua').value.trim()}, ${document.getElementById('endereco-numero').value.trim()}\n*Bairro:* ${document.getElementById('endereco-bairro').value.trim()}\n\n`;
+            }
 
-*💳 FORMA DE PAGAMENTO*
-${document.querySelector('input[name="payment"]:checked + span').textContent.trim()}
-${pagamento.value === 'dinheiro' && document.getElementById('troco-valor').value.trim() ? `Troco para: R$ ${document.getElementById('troco-valor').value.trim()}` : ''}
-
-_Delivery em Conchas-SP_`;
+            mensagem += `*FORMA DE PAGAMENTO*\n${document.querySelector('input[name="payment"]:checked + span').textContent.trim()}`;
+            if (pagamento.value === 'dinheiro' && document.getElementById('troco-valor').value.trim()) {
+                mensagem += `\nTroco para: R$ ${document.getElementById('troco-valor').value.trim()}`;
+            }
             
             var whatsappUrl = 'https://wa.me/5514991718704?text=' + encodeURIComponent(mensagem);
             window.open(whatsappUrl, '_blank');
@@ -1312,7 +1336,7 @@ _Delivery em Conchas-SP_`;
             var agora = new Date();
             var dia = agora.getDay();
             var hora = agora.getHours();
-            var diasAbertos = [4, 5, 6, 0]; // Sexta, Sábado, Domingo
+            var diasAbertos = [4, 5, 6, 0];
             var horarioAberto = hora >= 10;
             return diasAbertos.includes(dia) && horarioAberto;
         }
