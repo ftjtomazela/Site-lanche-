@@ -269,6 +269,11 @@
         .option-item:hover {
             background: #4b5563;
         }
+        
+        .option-item label {
+            cursor: pointer;
+            width: 100%;
+        }
 
         .option-item input {
             width: 20px;
@@ -759,6 +764,12 @@
             color: #e2e8f0;
             margin-bottom: 10px;
         }
+        
+        #status-dias {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #9ca3af;
+        }
 
         #notification-container {
             position: fixed;
@@ -781,14 +792,14 @@
             transform: translateX(120%);
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
+        
+        .notification.success {
+            background: #10b981;
+        }
 
         .notification.show {
             opacity: 1;
             transform: translateX(0);
-        }
-
-        .notification.success {
-            background: #10b981;
         }
 
         @media (max-width: 768px) {
@@ -799,7 +810,6 @@
             .cart-sidebar {
                 max-width: 100%;
             }
-            /* AJUSTE PARA TORNAR OS BOTÕES RESPONSIVOS */
             .location-options {
                 grid-template-columns: 1fr;
             }
@@ -809,9 +819,9 @@
 <body>
     <div id="status-overlay">
         <div id="status-box">
-            <h2>Estamos Fechados</h2>
-            <p>Nosso horário de funcionamento é de <strong>Sexta a Domingo</strong>, das <strong>18h às 00h</strong>.</p>
-            <p>Aguardamos seu pedido em breve!</p>
+            <h2 id="status-titulo">Estamos Fechados</h2>
+            <p id="status-mensagem">Nosso horário de funcionamento é de <strong>Quinta a Domingo</strong>, das <strong>10h às 00h</strong>.</p>
+            <p id="status-dias">Aguardamos seu pedido em breve!</p>
         </div>
     </div>
     
@@ -845,6 +855,10 @@
                 <button class="close-btn" onclick="closeModal()">✕ Fechar</button>
             </div>
             <div class="modal-body">
+                
+                <div id="sabor-bebida-section" class="options-section" style="display: none;">
+                    </div>
+                
                 <div class="options-section">
                     <div class="options-title">➕ Adicionais</div>
                     <div id="adicionais-container"></div>
@@ -985,10 +999,14 @@
     <div id="notification-container"></div>
 
     <script>
+        // CHAVE GERAL DA LOJA: Mude para 'false' para fechar a loja imediatamente (ex: acabou o pão).
+        var estoqueDisponivel = true;
+
         var lanches = [
-            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90, imagem: 'pernil.png' },
-            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'frango.png' },
-            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'costela.png' }
+            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90, imagem: 'pernil.png', tipo: 'lanche' },
+            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'frango.png', tipo: 'lanche' },
+            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'costela.png', tipo: 'lanche' },
+            { id: 4, nome: 'COMBO BELLPAR 600ML + CLÁSSICO PERNIL', descricao: 'Nosso campeão de vendas Clássico Pernil acompanhado de um Refrigerante Bellpar 600ml. A combinação perfeita!', preco: 22.90, imagem: 'combo-pernil.png', tipo: 'combo' }
         ];
 
         var bebidas = [
@@ -1003,7 +1021,7 @@
         ];
 
         var remocoes = [
-            { id: 'sem-bacon', nome: 'Sem Bacon' }, { id: 'sem-queijo', nome: 'Sem Queijo' }, { id: 'sem-alface', nome: 'Sem Alface' }, { id: 'sem-tomate', nome: 'Sem Vinagrete (Tomate e Cebola)' }, { id: 'sem-maionese', nome: 'Sem Maionese' }, { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
+            { id: 'sem-bacon', nome: 'Sem Bacon' }, { id: 'sem-queijo', nome: 'Sem Queijo' }, { id: 'sem-tomate', nome: 'Sem Vinagrete (Tomate e Cebola)' }, { id: 'sem-maionese', nome: 'Sem Maionese' }, { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
         ];
 
         var cart = [];
@@ -1012,10 +1030,9 @@
         
         function renderLanches() {
             var html = '';
-            for (var i = 0; i < lanches.length; i++) {
-                var lanche = lanches[i];
+            lanches.forEach(lanche => {
                 html += `<div class="product-card">
-                    <div class="product-image" style="background-image: url('${lanche.imagem}'); background-size: contain; background-position: center; background-repeat: no-repeat; "></div>
+                    <div class="product-image" style="background-image: url('${lanche.imagem}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
                     <div class="product-info">
                         <div class="product-name">${lanche.nome}</div>
                         <div class="product-description">${lanche.descricao}</div>
@@ -1025,49 +1042,68 @@
                         </div>
                     </div>
                 </div>`;
-            }
+            });
             document.getElementById('lanches-grid').innerHTML = html;
         }
 
         function renderBebidas() {
             var html = '';
-            for (var i = 0; i < bebidas.length; i++) {
-                var bebida = bebidas[i];
+            bebidas.forEach(bebida => {
+                const acaoBotao = bebida.nome.includes('Bellpar')
+                    ? `openSaborModal(${bebida.id})`
+                    : `addProdutoDiretoAoCarrinho(${bebida.id}, 'bebida')`;
+
                 html += `<div class="product-card">
                     <div class="product-image" style="background-image: url('${bebida.imagem}'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
                     <div class="product-info">
                         <div class="product-name">${bebida.nome}</div>
                         <div class="product-footer">
                             <div class="product-price">R$ ${bebida.preco.toFixed(2).replace('.', ',')}</div>
-                            <button class="add-btn" onclick="addBebidaToCart(${bebida.id})">Adicionar</button>
+                            <button class="add-btn" onclick="${acaoBotao}">Adicionar</button>
                         </div>
                     </div>
                 </div>`;
-            }
+            });
             document.getElementById('bebidas-grid').innerHTML = html;
         }
 
+        function addProdutoDiretoAoCarrinho(produtoId, categoria) {
+            if (!verificarHorarioFuncionamento(true)) return;
+            const produto = (categoria === 'bebida') ? bebidas.find(p => p.id === produtoId) : lanches.find(p => p.id === produtoId);
+            cart.push({ id: Date.now(), tipo: categoria, nome: produto.nome, preco: produto.preco, quantidade: 1 });
+            updateCart();
+            showNotification(`${produto.nome} adicionado ao carrinho!`, 'success');
+        }
+
         function openModal(lancheId) {
-            if (!verificarHorarioFuncionamento()) return;
+            if (!verificarHorarioFuncionamento(true)) return;
             currentLanche = lanches.find(l => l.id === lancheId);
             
             document.getElementById('modal-title').textContent = currentLanche.nome;
             document.getElementById('observacao').value = '';
             
-            var adicionaisHTML = adicionais.map(ad => `
-                <div class="option-item">
-                    <input type="checkbox" class="adicional-check" data-id="${ad.id}" data-preco="${ad.preco}" data-nome="${ad.nome}" onchange="updateModalTotal()">
-                    <span class="option-label">${ad.nome}</span>
-                    <span class="option-price">+ R$ ${ad.preco.toFixed(2).replace('.', ',')}</span>
-                </div>`).join('');
+            var adicionaisHTML = adicionais.map(ad => `<div class="option-item"><input type="checkbox" class="adicional-check" data-id="${ad.id}" data-preco="${ad.preco}" data-nome="${ad.nome}" onchange="updateModalTotal()"><span class="option-label">${ad.nome}</span><span class="option-price">+ R$ ${ad.preco.toFixed(2).replace('.', ',')}</span></div>`).join('');
             document.getElementById('adicionais-container').innerHTML = adicionaisHTML;
 
-            var removesHTML = remocoes.map(rem => `
-                <div class="option-item">
-                    <input type="checkbox" class="remocao-check" data-id="${rem.id}" data-nome="${rem.nome}">
-                    <span class="option-label">${rem.nome}</span>
-                </div>`).join('');
+            var removesHTML = remocoes.map(rem => `<div class="option-item"><input type="checkbox" class="remocao-check" data-id="${rem.id}" data-nome="${rem.nome}"><span class="option-label">${rem.nome}</span></div>`).join('');
             document.getElementById('remocoes-container').innerHTML = removesHTML;
+            
+            const saborSection = document.getElementById('sabor-bebida-section');
+            if (currentLanche.tipo === 'combo') {
+                const sabores = ['Conch-Cola', 'Tubaína', 'Guaraná'];
+                let saboresHTML = '<div class="options-title">🥤 Escolha o Sabor do Bellpar</div>';
+                saboresHTML += sabores.map((sabor, index) => `
+                    <div class="option-item">
+                        <input type="radio" name="sabor-combo" value="${sabor}" id="sabor-${index}" ${index === 0 ? 'checked' : ''}>
+                        <label for="sabor-${index}" class="option-label">${sabor}</label>
+                    </div>
+                `).join('');
+                saborSection.innerHTML = saboresHTML;
+                saborSection.style.display = 'block';
+            } else {
+                saborSection.innerHTML = '';
+                saborSection.style.display = 'none';
+            }
 
             updateModalTotal();
             document.getElementById('modal').classList.add('active');
@@ -1086,53 +1122,31 @@
         }
 
         function addLancheToCart() {
-            var selectedAdicionais = Array.from(document.querySelectorAll('.adicional-check:checked')).map(check => ({
-                id: check.dataset.id, nome: check.dataset.nome, preco: parseFloat(check.dataset.preco)
-            }));
-            var selectedRemocoes = Array.from(document.querySelectorAll('.remocao-check:checked')).map(check => ({
-                id: check.dataset.id, nome: check.dataset.nome
-            }));
-            var observacao = document.getElementById('observacao').value;
-            var precoTotal = currentLanche.preco + selectedAdicionais.reduce((sum, ad) => sum + ad.preco, 0);
+            const selectedAdicionais = Array.from(document.querySelectorAll('.adicional-check:checked')).map(check => ({ id: check.dataset.id, nome: check.dataset.nome, preco: parseFloat(check.dataset.preco) }));
+            const selectedRemocoes = Array.from(document.querySelectorAll('.remocao-check:checked')).map(check => ({ id: check.dataset.id, nome: check.dataset.nome }));
+            const observacao = document.getElementById('observacao').value;
+            const precoTotal = currentLanche.preco + selectedAdicionais.reduce((sum, ad) => sum + ad.preco, 0);
 
-            cart.push({ id: Date.now(), tipo: 'lanche', nome: currentLanche.nome, preco: currentLanche.preco, precoTotal, adicionais: selectedAdicionais, remocoes: selectedRemocoes, observacao, quantidade: 1 });
+            let nomeFinal = currentLanche.nome;
+            if (currentLanche.tipo === 'combo') {
+                const saborSelecionado = document.querySelector('input[name="sabor-combo"]:checked').value;
+                nomeFinal += ` (Bellpar ${saborSelecionado})`;
+            }
+
+            cart.push({ id: Date.now(), tipo: 'lanche', nome: nomeFinal, preco: currentLanche.preco, precoTotal, adicionais: selectedAdicionais, remocoes: selectedRemocoes, observacao, quantidade: 1 });
+            
             closeModal();
             updateCart();
+            showNotification(`${currentLanche.nome} adicionado ao carrinho!`, 'success');
         }
 
-        function addBebidaToCart(bebidaId) {
-            if (!verificarHorarioFuncionamento()) return;
-            var bebida = bebidas.find(b => b.id === bebidaId);
-            if (bebida.nome.includes('Bellpar')) {
-                openSaborModal(bebida);
-            } else {
-                cart.push({ id: Date.now(), tipo: 'bebida', nome: bebida.nome, preco: bebida.preco, quantidade: 1 });
-                updateCart();
-            }
-        }
-
-        function openSaborModal(bebida) {
+        function openSaborModal(bebidaId) {
+            if (!verificarHorarioFuncionamento(true)) return;
+            const bebida = bebidas.find(b => b.id === bebidaId);
             var sabores = ['Conch-Cola', 'Tubaína', 'Guaraná'];
-            var saboresHTML = sabores.map(sabor => `
-                <div class="option-item" onclick="addBebidaComSabor('${bebida.nome}', ${bebida.preco}, '${sabor}')">
-                    <span class="option-label" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold;">${sabor}</span>
-                </div>`).join('');
+            var saboresHTML = sabores.map(sabor => `<div class="option-item" onclick="addBebidaComSabor('${bebida.nome}', ${bebida.preco}, '${sabor}')"><span class="option-label" style="flex: 1; text-align: center; font-size: 1.2rem; font-weight: bold;">${sabor}</span></div>`).join('');
 
-            var modalHTML = `
-                <div class="modal active" id="sabor-modal" onclick="closeSaborModal()">
-                    <div class="modal-content" onclick="event.stopPropagation()">
-                        <div class="modal-header">
-                            <div class="modal-title">Escolha o Sabor</div>
-                            <button class="close-btn" onclick="closeSaborModal()">✕ Fechar</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="options-section">
-                                <div class="options-title">🥤 Sabores Disponíveis</div>
-                                ${saboresHTML}
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+            var modalHTML = `<div class="modal active" id="sabor-modal" onclick="closeSaborModal()"><div class="modal-content" onclick="event.stopPropagation()"><div class="modal-header"><div class="modal-title">Escolha o Sabor</div><button class="close-btn" onclick="closeSaborModal()">✕ Fechar</button></div><div class="modal-body"><div class="options-section"><div class="options-title">🥤 Sabores Disponíveis</div>${saboresHTML}</div></div></div></div>`;
             document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
 
@@ -1145,6 +1159,7 @@
             cart.push({ id: Date.now(), tipo: 'bebida', nome: `${nomeBebida} - ${sabor}`, preco, quantidade: 1, sabor });
             closeSaborModal();
             updateCart();
+            showNotification(`${nomeBebida} - ${sabor} adicionado!`, 'success');
         }
 
         function updateCart() {
@@ -1272,7 +1287,6 @@
                 return;
             }
             
-            // Validação de endereço apenas se não for retirada
             if (localidade.value !== 'retirada') {
                 var rua = document.getElementById('endereco-rua').value.trim();
                 var numero = document.getElementById('endereco-numero').value.trim();
@@ -1332,19 +1346,62 @@
             }, 3000);
         }
 
-        function verificarHorarioFuncionamento() {
+        function verificarHorarioFuncionamento(showAlert = false) {
+            if (!estoqueDisponivel) {
+                if (showAlert) showNotification('A loja encerrou por hoje. Volte amanhã!');
+                return false;
+            }
             var agora = new Date();
             var dia = agora.getDay();
             var hora = agora.getHours();
             var diasAbertos = [4, 5, 6, 0];
             var horarioAberto = hora >= 10;
-            return diasAbertos.includes(dia) && horarioAberto;
+            const isAberto = diasAbertos.includes(dia) && horarioAberto;
+            if (!isAberto && showAlert) {
+                showNotification('A loja está fechada no momento.');
+            }
+            return isAberto;
         }
 
         function gerenciarStatusLoja() {
-            if (!verificarHorarioFuncionamento()) {
-                document.getElementById('status-overlay').style.display = 'flex';
+            const diasSemana = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+            const diasAbertos = [4, 5, 6, 0];
+            const nomesDiasAbertos = diasAbertos.map(d => diasSemana[d]).join(', ');
+
+            const overlay = document.getElementById('status-overlay');
+            const titulo = document.getElementById('status-titulo');
+            const mensagem = document.getElementById('status-mensagem');
+            const dias = document.getElementById('status-dias');
+
+            const desativarBotoes = () => {
                 document.querySelectorAll('.add-btn, .confirm-btn, .checkout-btn').forEach(btn => btn.disabled = true);
+            };
+
+            if (!estoqueDisponivel) {
+                let hoje = new Date().getDay();
+                let proximoDiaIndex = -1;
+                for (let i = 1; i <= 7; i++) {
+                    let diaVerificado = (hoje + i) % 7;
+                    if (diasAbertos.includes(diaVerificado)) {
+                        proximoDiaIndex = diaVerificado;
+                        break;
+                    }
+                }
+                
+                titulo.textContent = "Encerramos por Hoje!";
+                mensagem.textContent = `Agradecemos a preferência! Nossos produtos esgotaram por hoje.`;
+                dias.textContent = `Nossos dias de funcionamento são: ${nomesDiasAbertos}. Voltamos na próxima ${diasSemana[proximoDiaIndex]}.`;
+                overlay.style.display = 'flex';
+                desativarBotoes();
+                return;
+            }
+
+            if (!verificarHorarioFuncionamento()) {
+                 titulo.textContent = "Estamos Fechados";
+                 mensagem.innerHTML = `Nosso horário de funcionamento é de <strong>Quinta a Domingo</strong>, das <strong>10h às 00h</strong>.`;
+                 dias.textContent = `Aguardamos seu pedido em breve!`;
+                 overlay.style.display = 'flex';
+                 desativarBotoes();
             }
         }
 
