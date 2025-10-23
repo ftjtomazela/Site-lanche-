@@ -436,6 +436,7 @@
             color: #9ca3af;
             font-size: 0.9rem;
             margin-bottom: 10px;
+            line-height: 1.5;
         }
 
         .cart-item-footer {
@@ -859,12 +860,17 @@
                 <div id="sabor-bebida-section" class="options-section" style="display: none;">
                     </div>
                 
+                <div id="tipo-queijo-section" class="options-section" style="display: none;">
+                    <div class="options-title">🧀 Escolha o Queijo</div>
+                    <div id="tipo-queijo-container"></div>
+                </div>
+
                 <div class="options-section">
                     <div class="options-title">➕ Adicionais</div>
                     <div id="adicionais-container"></div>
                 </div>
 
-                <div class="options-section">
+                <div class="options-section" id="remocoes-section">
                     <div class="options-title">➖ Remover Ingredientes</div>
                     <div id="remocoes-container"></div>
                 </div>
@@ -1002,12 +1008,12 @@
         // CHAVE GERAL DA LOJA: Mude para 'false' para fechar a loja imediatamente (ex: acabou o pão).
         var estoqueDisponivel = true;
 
+        // VARIÁVEL 'LANCHES' ATUALIZADA com 'ingredientesBase'
         var lanches = [
-            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90, imagem: 'pernil.png', tipo: 'lanche' },
-            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'frango.png', tipo: 'lanche' },
-            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'costela.png', tipo: 'lanche' },
-            { id: 4, nome: 'COMBO BELLPAR 600ML + CLÁSSICO PERNIL', descricao: 'Nosso campeão de vendas Clássico Pernil acompanhado de um Refrigerante Bellpar 600ml. A combinação perfeita!', preco: 22.90, imagem: 'combo-pernil.png', tipo: 'combo' }
-        ];
+            { id: 1, nome: 'CLÁSSICO PERNIL', descricao: 'Pernil desfiado no tempero da casa, queijo prato ou mussarela derretido, salada de repolho crocante, vinagrete de tomate e cebola, maionese no pão baguete.', preco: 19.90, imagem: 'pernil.png', tipo: 'lanche', ingredientesBase: ['queijo', 'repolho-maionese', 'tomate', 'maionese'] },
+            { id: 2, nome: 'FRANGO CREMOSO', descricao: 'Frango desfiado temperado, Catupiry original cremoso, bacon, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'frango.png', tipo: 'lanche', ingredientesBase: ['catupiry', 'bacon', 'tomate'] },
+            { id: 3, nome: 'COSTELA ESPECIAL', descricao: 'Costela bovina desfiada e suculenta, queijo prato ou mussarela derretido, molho barbecue, vinagrete de tomate e cebola no pão baguete.', preco: 21.90, imagem: 'costela.png', tipo: 'lanche', ingredientesBase: ['queijo', 'tomate'] },
+           ];
 
         var bebidas = [
             { id: 102, nome: 'Coca-Cola Lata 350ml', preco: 6.00, imagem: 'coca-lata.png' },
@@ -1016,12 +1022,23 @@
             { id: 105, nome: 'Refrigerante Bellpar 2L', preco: 7.00, imagem: 'bellpar-600ml.png' }
         ];
 
+        // VARIÁVEL 'ADICIONAIS' ATUALIZADA
         var adicionais = [
-            { id: 'bacon', nome: 'Bacon Extra', preco: 5.00 }, { id: 'queijo', nome: 'Queijo Extra', preco: 4.00 }, { id: 'catupiry', nome: 'Catupiry Extra', preco: 5.00 },  { id: 'repolho-maionese', nome: 'Repolho com Maionese', preco: 2.00 }
+            { id: 'bacon', nome: 'Bacon Extra', preco: 5.00 }, 
+            { id: 'queijo-prato', nome: 'Queijo Prato Extra', preco: 5.00 }, 
+            { id: 'queijo-mussarela', nome: 'Queijo Mussarela Extra', preco: 5.00 }, 
+            { id: 'catupiry', nome: 'Catupiry Extra', preco: 5.00 },  
+            { id: 'repolho-maionese', nome: 'Repolho com Maionese', preco: 2.00 }
         ];
 
+        // VARIÁVEL 'REMOCOES' ATUALIZADA com 'ingredienteId'
         var remocoes = [
-            { id: 'sem-bacon', nome: 'Sem Bacon' }, { id: 'sem-queijo', nome: 'Sem Queijo' }, { id: 'sem-tomate', nome: 'Sem Vinagrete (Tomate e Cebola)' }, { id: 'sem-maionese', nome: 'Sem Maionese' }, { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese' }
+            { id: 'sem-bacon', nome: 'Sem Bacon', ingredienteId: 'bacon' }, 
+            { id: 'sem-queijo', nome: 'Sem Queijo', ingredienteId: 'queijo' }, 
+            { id: 'sem-catupiry', nome: 'Sem Catupiry', ingredienteId: 'catupiry' },
+            { id: 'sem-tomate', nome: 'Sem Vinagrete (Tomate e Cebola)', ingredienteId: 'tomate' }, 
+            { id: 'sem-maionese', nome: 'Sem Maionese', ingredienteId: 'maionese' }, 
+            { id: 'sem-repolho-maionese', nome: 'Sem Repolho com Maionese', ingredienteId: 'repolho-maionese' }
         ];
 
         var cart = [];
@@ -1075,19 +1092,54 @@
             showNotification(`${produto.nome} adicionado ao carrinho!`, 'success');
         }
 
+        // FUNÇÃO 'OPENMODAL' ATUALIZADA
         function openModal(lancheId) {
             if (!verificarHorarioFuncionamento(true)) return;
             currentLanche = lanches.find(l => l.id === lancheId);
             
             document.getElementById('modal-title').textContent = currentLanche.nome;
             document.getElementById('observacao').value = '';
+
+            // IDs dos lanches que têm a opção de queijo (Pernil e Costela)
+            const lanchesComQueijo = [1, 3]; 
+            const queijoSection = document.getElementById('tipo-queijo-section');
+            
+            if (lanchesComQueijo.includes(currentLanche.id)) {
+                let queijoHTML = `
+                    <div class="option-item">
+                        <input type="radio" name="tipo-queijo" value="Prato" id="queijo-prato" checked>
+                        <label for="queijo-prato" class="option-label">Queijo Prato</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="tipo-queijo" value="Mussarela" id="queijo-mussarela">
+                        <label for="queijo-mussarela" class="option-label">Queijo Mussarela</label>
+                    </div>
+                `;
+                document.getElementById('tipo-queijo-container').innerHTML = queijoHTML;
+                queijoSection.style.display = 'block';
+            } else {
+                queijoSection.style.display = 'none';
+                document.getElementById('tipo-queijo-container').innerHTML = '';
+            }
             
             var adicionaisHTML = adicionais.map(ad => `<div class="option-item"><input type="checkbox" class="adicional-check" data-id="${ad.id}" data-preco="${ad.preco}" data-nome="${ad.nome}" onchange="updateModalTotal()"><span class="option-label">${ad.nome}</span><span class="option-price">+ R$ ${ad.preco.toFixed(2).replace('.', ',')}</span></div>`).join('');
             document.getElementById('adicionais-container').innerHTML = adicionaisHTML;
 
-            var removesHTML = remocoes.map(rem => `<div class="option-item"><input type="checkbox" class="remocao-check" data-id="${rem.id}" data-nome="${rem.nome}"><span class="option-label">${rem.nome}</span></div>`).join('');
-            document.getElementById('remocoes-container').innerHTML = removesHTML;
-            
+            // LÓGICA DE REMOÇÕES ATUALIZADA
+            const ingredientesLanche = currentLanche.ingredientesBase || [];
+            const remocoesDisponiveis = remocoes.filter(rem => ingredientesLanche.includes(rem.ingredienteId));
+            const remocoesSection = document.getElementById('remocoes-section');
+
+            if (remocoesDisponiveis.length > 0) {
+                var removesHTML = remocoesDisponiveis.map(rem => `<div class="option-item"><input type="checkbox" class="remocao-check" data-id="${rem.id}" data-nome="${rem.nome}"><span class="option-label">${rem.nome}</span></div>`).join('');
+                document.getElementById('remocoes-container').innerHTML = removesHTML;
+                remocoesSection.style.display = 'block';
+            } else {
+                document.getElementById('remocoes-container').innerHTML = '';
+                remocoesSection.style.display = 'none';
+            }
+            // FIM DA LÓGICA DE REMOÇÕES
+
             const saborSection = document.getElementById('sabor-bebida-section');
             if (currentLanche.tipo === 'combo') {
                 const sabores = ['Conch-Cola', 'Tubaína', 'Guaraná'];
@@ -1121,6 +1173,7 @@
             document.getElementById('modal').classList.remove('active');
         }
 
+        // FUNÇÃO 'ADDLANCHETOCART' ATUALIZADA
         function addLancheToCart() {
             const selectedAdicionais = Array.from(document.querySelectorAll('.adicional-check:checked')).map(check => ({ id: check.dataset.id, nome: check.dataset.nome, preco: parseFloat(check.dataset.preco) }));
             const selectedRemocoes = Array.from(document.querySelectorAll('.remocao-check:checked')).map(check => ({ id: check.dataset.id, nome: check.dataset.nome }));
@@ -1133,7 +1186,14 @@
                 nomeFinal += ` (Bellpar ${saborSelecionado})`;
             }
 
-            cart.push({ id: Date.now(), tipo: 'lanche', nome: nomeFinal, preco: currentLanche.preco, precoTotal, adicionais: selectedAdicionais, remocoes: selectedRemocoes, observacao, quantidade: 1 });
+            // Captura o queijo selecionado
+            const lanchesComQueijo = [1, 3];
+            let queijoSelecionado = null;
+            if (lanchesComQueijo.includes(currentLanche.id)) {
+                queijoSelecionado = document.querySelector('input[name="tipo-queijo"]:checked').value;
+            }
+
+            cart.push({ id: Date.now(), tipo: 'lanche', nome: nomeFinal, preco: currentLanche.preco, precoTotal, adicionais: selectedAdicionais, remocoes: selectedRemocoes, observacao: observacao, queijo: queijoSelecionado, quantidade: 1 });
             
             closeModal();
             updateCart();
@@ -1162,6 +1222,7 @@
             showNotification(`${nomeBebida} - ${sabor} adicionado!`, 'success');
         }
 
+        // FUNÇÃO 'UPDATECART' ATUALIZADA
         function updateCart() {
             document.getElementById('cart-count').textContent = cart.length;
             var cartFooter = document.getElementById('cart-footer');
@@ -1176,9 +1237,19 @@
 
             cartItems.innerHTML = cart.map(item => {
                 let details = '';
-                if (item.adicionais && item.adicionais.length > 0) details += `➕ ${item.adicionais.map(ad => ad.nome).join(', ')}<br>`;
-                if (item.remocoes && item.remocoes.length > 0) details += `➖ ${item.remocoes.map(rem => rem.nome).join(', ')}<br>`;
-                if (item.observacao) details += `📝 ${item.observacao}`;
+                // Adiciona o queijo selecionado aos detalhes
+                if (item.queijo) {
+                    details += `🧀 Queijo: ${item.queijo}<br>`;
+                }
+                if (item.adicionais && item.adicionais.length > 0) {
+                    details += `➕ ${item.adicionais.map(ad => ad.nome).join(', ')}<br>`;
+                }
+                if (item.remocoes && item.remocoes.length > 0) {
+                    details += `➖ ${item.remocoes.map(rem => rem.nome).join(', ')}<br>`;
+                }
+                if (item.observacao) {
+                    details += `📝 ${item.observacao}`;
+                }
                 
                 var itemPreco = (item.precoTotal || item.preco) * item.quantidade;
 
@@ -1308,6 +1379,10 @@
             
             let mensagem = `*🍔 NOVO PEDIDO - DONA BAGUETE*\n\n${cart.map((item, i) => {
                 let itemText = `*${i + 1}. ${item.nome}* (${item.quantidade}x)\n   💰 R$ ${((item.precoTotal || item.preco) * item.quantidade).toFixed(2).replace('.', ',')}\n`;
+                // Adiciona o queijo na mensagem do WhatsApp
+                if (item.queijo) {
+                    itemText += `   🧀 Queijo: ${item.queijo}\n`;
+                }
                 if (item.adicionais && item.adicionais.length > 0) itemText += `   ➕ Adicionais: ${item.adicionais.map(ad => ad.nome).join(', ')}\n`;
                 if (item.remocoes && item.remocoes.length > 0) itemText += `   ➖ Remover: ${item.remocoes.map(rem => rem.nome).join(', ')}\n`;
                 if (item.observacao) itemText += `   📝 Obs: ${item.observacao}\n`;
@@ -1354,9 +1429,36 @@
             var agora = new Date();
             var dia = agora.getDay();
             var hora = agora.getHours();
-            var diasAbertos = [4, 5, 6, 0];
-            var horarioAberto = hora >= 10;
+            var diasAbertos = [4, 5, 6, 0]; // Quinta, Sexta, Sábado, Domingo
+            var horarioAberto = hora >= 10; // Abre às 10h (vai até 00h)
+            
+            // Lógica ajustada: Se for Quinta, Sexta, Sábado, abre das 10h às 23:59
+            // Se for Domingo, abre das 10h às 23:59
+            // Se for Segunda de madrugada (dia 1) antes das 00h (hora 0), ainda conta como aberto de Domingo.
+            // A lógica original (hora >= 10) já cobre isso bem, pois 00h (meia-noite) é < 10.
+            // Para permitir funcionar até meia-noite (00:00 do dia seguinte):
+            // Dias: 4, 5, 6 (Qui, Sex, Sab) -> Abre 10h e fecha 00h (meia-noite, que já é dia 5, 6, 0)
+            // Dia: 0 (Dom) -> Abre 10h e fecha 00h (meia-noite, que já é dia 1)
+            
+            // Correção da lógica de horário:
+            // Aberto se:
+            // 1. O dia é Qui, Sex, Sab (4, 5, 6) E a hora é 10 ou mais
+            // 2. O dia é Dom (0) E a hora é 10 ou mais
+            // 3. O dia é Sex, Sab, Dom (5, 6, 0) E a hora é 0 (meia-noite, referente ao dia anterior)
+            // A lógica atual `diasAbertos.includes(dia) && horarioAberto` (hora >= 10)
+            // cobre os dias de Quinta a Domingo, das 10h às 23:59.
+            // Ela NÃO permite pedidos após a meia-noite.
+            // Se o horário é das 10h às 00h (meia-noite), a lógica está correta,
+            // pois 00:00 já é o próximo dia, que não está em 'diasAbertos' (exceto Dom->Seg)
+            // E mesmo que estivesse, a hora (0) é < 10.
+            
+            // A sua lógica `var horarioAberto = hora >= 10;` e `diasAbertos.includes(dia)`
+            // significa que a loja abre de Quinta a Domingo, das 10:00 às 23:59.
+            // Se você quer que feche à meia-noite (00:00), está correto, pois 00:00 do dia seguinte
+            // (ex: segunda-feira, dia 1) não estará em `diasAbertos` e `hora` (0) será < 10.
+            
             const isAberto = diasAbertos.includes(dia) && horarioAberto;
+            
             if (!isAberto && showAlert) {
                 showNotification('A loja está fechada no momento.');
             }
@@ -1366,7 +1468,7 @@
         function gerenciarStatusLoja() {
             const diasSemana = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
             const diasAbertos = [4, 5, 6, 0];
-            const nomesDiasAbertos = diasAbertos.map(d => diasSemana[d]).join(', ');
+            const nomesDiasAbertos = "Quinta a Domingo"; // Simplificado
 
             const overlay = document.getElementById('status-overlay');
             const titulo = document.getElementById('status-titulo');
@@ -1390,7 +1492,8 @@
                 
                 titulo.textContent = "Encerramos por Hoje!";
                 mensagem.textContent = `Agradecemos a preferência! Nossos produtos esgotaram por hoje.`;
-                dias.textContent = `Nossos dias de funcionamento são: ${nomesDiasAbertos}. Voltamos na próxima ${diasSemana[proximoDiaIndex]}.`;
+                let proximoDiaNome = proximoDiaIndex !== -1 ? `na próxima ${diasSemana[proximoDiaIndex]}` : 'em breve';
+                dias.textContent = `Nossos dias de funcionamento são: ${nomesDiasAbertos}. Voltamos ${proximoDiaNome}.`;
                 overlay.style.display = 'flex';
                 desativarBotoes();
                 return;
